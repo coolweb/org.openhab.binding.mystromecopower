@@ -111,11 +111,11 @@ public class MyStromEcoPowerBinding extends AbstractActiveBinding<MyStromEcoPowe
 						if(provider.getIsSwitch(itemName)){
 							State state = device.state.equals("on") ? OnOffType.ON : OnOffType.OFF;
 							eventPublisher.postUpdate(itemName,  state);
-							
-							if(device.state.equals("offline"))
-							{
-								eventPublisher.postUpdate(itemName,  new StringType("offline"));
-							}
+						}
+						
+						if(provider.getIsStringItem(itemName)){
+							// publish state of device, on/off/offline
+							eventPublisher.postUpdate(itemName,  new StringType(device.state));
 						}
 						
 						if(provider.getIsNumberItem(itemName)){
@@ -144,23 +144,26 @@ public class MyStromEcoPowerBinding extends AbstractActiveBinding<MyStromEcoPowe
 			String switchFriendlyName = provider.getMystromFriendlyName(itemName);
 			deviceId = this.devicesMap.get(switchFriendlyName);
 		    logger.debug("item '{}' is configured as '{}'",itemName, switchFriendlyName);
-		}
-		
-		if(deviceId != null)
-		{
-			try {
-				logger.debug("Command '{}' is about to be send to item '{}'",command, itemName );
-				
-				boolean onOff = OnOffType.ON.equals(command);
-				logger.debug("command '{}' transformed to '{}'", command, onOff);
-				
-				this.mystromClient.ChangeState(deviceId, onOff);
-				
-			} catch (Exception e) {
-				logger.error("Failed to send {} command", command, e);
+		    
+		    if(deviceId != null)
+			{
+		    	if(provider.getIsSwitch(itemName))
+		    	{
+					try {
+						logger.info("Command '{}' is about to be send to item '{}'",command, itemName );
+						
+						boolean onOff = OnOffType.ON.equals(command);
+						logger.debug("command '{}' transformed to '{}'", command, onOff);
+						
+						this.mystromClient.ChangeState(deviceId, onOff);
+						
+					} catch (Exception e) {
+						logger.error("Failed to send {} command", command, e);
+					}
+		    	}
+			} else {
+				logger.error("Unable to send command to '{}' device is not in discovery table", itemName);
 			}
-		} else {
-			logger.error("Unable to send command to '{}' device is not in discovery table", itemName);
 		}
 	}
 	

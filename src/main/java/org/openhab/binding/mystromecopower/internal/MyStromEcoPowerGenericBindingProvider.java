@@ -13,6 +13,7 @@ import org.openhab.core.binding.BindingConfig;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.model.item.binding.AbstractGenericBindingProvider;
 import org.openhab.model.item.binding.BindingConfigParseException;
@@ -37,10 +38,12 @@ public class MyStromEcoPowerGenericBindingProvider extends AbstractGenericBindin
 	 */
 	@Override
 	public void validateItemType(Item item, String bindingConfig) throws BindingConfigParseException {
-		if (!(item instanceof SwitchItem || item instanceof NumberItem)) {
+		if (!(item instanceof SwitchItem ||
+				item instanceof NumberItem ||
+				item instanceof StringItem)) {
 			throw new BindingConfigParseException("item '" + item.getName()
 					+ "' is of type '" + item.getClass().getSimpleName()
-					+ "', only Switch or Number is allowed - please check your *.items configuration");
+					+ "', only Switch, Number or String is allowed - please check your *.items configuration");
 		}
 	}
 	
@@ -56,6 +59,7 @@ public class MyStromEcoPowerGenericBindingProvider extends AbstractGenericBindin
 		config.mystromFriendlyName = bindingConfig;
 		config.isSwitch = item instanceof SwitchItem;
 		config.isNumberItem = item instanceof NumberItem;
+		config.isStringItem = item instanceof StringItem;
 		addBindingConfig(item, config);		
 	}
 	
@@ -72,6 +76,8 @@ public class MyStromEcoPowerGenericBindingProvider extends AbstractGenericBindin
 		public Boolean isSwitch = false;
 		
 		public Boolean isNumberItem = false;
+		
+		public Boolean isStringItem = false;
 	}
 
 
@@ -85,5 +91,11 @@ public class MyStromEcoPowerGenericBindingProvider extends AbstractGenericBindin
 	public Boolean getIsNumberItem(String itemName) {
 		MyStromEcoPowerBindingConfig config = (MyStromEcoPowerBindingConfig) bindingConfigs.get(itemName);
 		return config != null ? config.isNumberItem : false;
+	}
+
+	@Override
+	public Boolean getIsStringItem(String itemName) {
+		MyStromEcoPowerBindingConfig config = (MyStromEcoPowerBindingConfig) bindingConfigs.get(itemName);
+		return config != null ? config.isStringItem : false;
 	}
 }

@@ -20,4 +20,6 @@ public interface MyStromEcoPowerBindingProvider extends BindingProvider {
 	public Boolean getIsSwitch(String itemName);
 	
 	public Boolean getIsNumberItem(String itemName);
+	
+	public Boolean getIsStringItem(String itemName);
 }

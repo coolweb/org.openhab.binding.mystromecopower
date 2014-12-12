@@ -197,8 +197,9 @@ public class MystromClient implements IMystromClient{
 		
 		try {
 			HttpURLConnection httpURLConnection;
-			httpURLConnection = (HttpURLConnection) new URL(API_URL + "switch" +
+			httpURLConnection = (HttpURLConnection) new URL(API_URL + "device/switch" +
 					"?authToken=" + this.authToken
+					+ "&id=" + deviceId
 					+ "&on=" + newStateIsOn.toString())
 				.openConnection();
 		
@@ -208,7 +209,8 @@ public class MystromClient implements IMystromClient{
 			
 			String status = jsonObject.get("status").getAsString();
 			if(!status.equals("ok")){
-				this.logger.error("Unable to switch state for device '{}'", deviceId);
+				String error = jsonObject.get("error").getAsString();
+				this.logger.error("Unable to switch state for device '{}' error '{}'", deviceId, error);
 			}
 			
 			String newState = jsonObject.get("state").getAsString();

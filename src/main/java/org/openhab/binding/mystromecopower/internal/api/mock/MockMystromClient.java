@@ -36,6 +36,13 @@ public class MockMystromClient implements IMystromClient{
 		devices.put(device2.id, device2);
 		foundDevices.add(device2);
 		
+		MystromDevice device3 = new MystromDevice();
+		device3.name = "Chauffe eau";
+		device3.id = "3";
+		device3.state = "offline";
+		devices.put(device3.id, device3);
+		foundDevices.add(device3);
+		
 		return foundDevices;
 	}
 
