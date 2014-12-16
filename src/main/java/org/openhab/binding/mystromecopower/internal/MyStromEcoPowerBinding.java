@@ -247,6 +247,8 @@ public class MyStromEcoPowerBinding extends AbstractActiveBinding<MyStromEcoPowe
 		
 		for (MystromDevice mystromDevice : devices) {
 			this.devicesMap.put(mystromDevice.name, mystromDevice.id);
+			logger.info("Mystrom device name: '{}', mystrom device id:'{}'", 
+					mystromDevice.name, mystromDevice.id);
 		}
 	}
 }
