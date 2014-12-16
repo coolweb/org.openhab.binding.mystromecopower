@@ -35,6 +35,7 @@ public interface IMystromClient {
 	 * Change the state of a device on or off.
 	 * @param deviceId The id of the device for which to change state.
 	 * @param newStateIsOn Indicates if new state must be on or off.
+	 * @return True is change is successful else False.
 	 */
-	public void ChangeState(String deviceId, Boolean newStateIsOn);
+	public Boolean ChangeState(String deviceId, Boolean newStateIsOn);
 }

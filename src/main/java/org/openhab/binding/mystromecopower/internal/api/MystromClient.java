@@ -188,7 +188,7 @@ public class MystromClient implements IMystromClient{
 	 * @see org.openhab.binding.mystromecopower.internal.api.IMystromClient#ChangeState(java.lang.String, java.lang.Boolean)
 	 */
 	@Override
-	public void ChangeState(String deviceId, Boolean newStateIsOn) {
+	public Boolean ChangeState(String deviceId, Boolean newStateIsOn) {
 		Reader reader = null;
 		this.logger.info(
 				"Change state for device id '{}', new state is on: '{}'",
@@ -211,6 +211,7 @@ public class MystromClient implements IMystromClient{
 			if(!status.equals("ok")){
 				String error = jsonObject.get("error").getAsString();
 				this.logger.error("Unable to switch state for device '{}' error '{}'", deviceId, error);
+				return false;
 			}
 			
 			String newState = jsonObject.get("state").getAsString();
@@ -218,10 +219,13 @@ public class MystromClient implements IMystromClient{
 					"Switch state for device '{}' successfull, state is '{}'",
 					deviceId,
 					newState);
+			
+			return true;
 		}
 		catch(Exception ex)
 		{
 			this.logger.error("Error set state: '{}'", ex.toString());
+			return false;
 		} 
 		finally {
 			if (reader != null) {

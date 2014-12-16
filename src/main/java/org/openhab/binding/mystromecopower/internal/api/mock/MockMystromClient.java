@@ -54,8 +54,9 @@ public class MockMystromClient implements IMystromClient{
 	}
 
 	@Override
-	public void ChangeState(String deviceId, Boolean newStateIsOn) {
+	public Boolean ChangeState(String deviceId, Boolean newStateIsOn) {
 		this.devices.get(deviceId).state = newStateIsOn ? "on" : "off";
+		return false;
 	}
 
 }

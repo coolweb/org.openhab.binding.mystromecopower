@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @since 1.7.0-SNAPSHOT
  */
 public class MyStromEcoPowerBinding extends AbstractActiveBinding<MyStromEcoPowerBindingProvider> implements ManagedService {
-	private Boolean devMode = false;
+	private Boolean devMode = true;
 	private String userName;
 	private String password;
 	private IMystromClient mystromClient;
@@ -155,7 +155,12 @@ public class MyStromEcoPowerBinding extends AbstractActiveBinding<MyStromEcoPowe
 						boolean onOff = OnOffType.ON.equals(command);
 						logger.debug("command '{}' transformed to '{}'", command, onOff);
 						
-						this.mystromClient.ChangeState(deviceId, onOff);
+						if(!this.mystromClient.ChangeState(deviceId, onOff))
+						{
+							// Unsuccessful state change, inform bus that the good 
+							// state is the old one.
+							eventPublisher.postUpdate(itemName,  onOff ? OnOffType.OFF : OnOffType.ON);
+						}
 						
 					} catch (Exception e) {
 						logger.error("Failed to send {} command", command, e);
