@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2014, openHAB.org and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.mystromecopower.internal.api;
 
 import org.openhab.binding.mystromecopower.internal.api.model.*;
@@ -17,6 +25,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * Manage Json Api call to mystrom Api.
+ * @since 1.7.0-SNAPSHOT
+ * @author Christophe
+ *
+ */
 public class MystromClient implements IMystromClient{
 	private Logger logger;
 	private JsonParser jsonParser;

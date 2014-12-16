@@ -25,6 +25,10 @@ import org.openhab.model.item.binding.BindingConfigParseException;
  * @author Jordens Christophe
  * @since 1.7.0-SNAPSHOT
  */
+/**
+ * @author Christophe
+ *
+ */
 public class MyStromEcoPowerGenericBindingProvider extends AbstractGenericBindingProvider implements MyStromEcoPowerBindingProvider {
 	/**
 	 * {@inheritDoc}
@@ -63,39 +67,66 @@ public class MyStromEcoPowerGenericBindingProvider extends AbstractGenericBindin
 		addBindingConfig(item, config);		
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openhab.binding.mystromecopower.MyStromEcoPowerBindingProvider#getMystromFriendlyName(java.lang.String)
+	 */
 	public String getMystromFriendlyName(String itemName) {
 		MyStromEcoPowerBindingConfig config = (MyStromEcoPowerBindingConfig) bindingConfigs.get(itemName);
 		return config != null ? config.mystromFriendlyName : null;
 	}
 	
-	
-	class MyStromEcoPowerBindingConfig implements BindingConfig {
-		// put member fields here which holds the parsed values
-		public String mystromFriendlyName;
-		
-		public Boolean isSwitch = false;
-		
-		public Boolean isNumberItem = false;
-		
-		public Boolean isStringItem = false;
-	}
-
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean getIsSwitch(String itemName) {
 		MyStromEcoPowerBindingConfig config = (MyStromEcoPowerBindingConfig) bindingConfigs.get(itemName);
 		return config != null ? config.isSwitch : false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean getIsNumberItem(String itemName) {
 		MyStromEcoPowerBindingConfig config = (MyStromEcoPowerBindingConfig) bindingConfigs.get(itemName);
 		return config != null ? config.isNumberItem : false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Boolean getIsStringItem(String itemName) {
 		MyStromEcoPowerBindingConfig config = (MyStromEcoPowerBindingConfig) bindingConfigs.get(itemName);
 		return config != null ? config.isStringItem : false;
+	}
+	
+	/**
+	 * This class is responsible to transport configuration data.
+	 * 
+	 * @author Jordens Christophe
+	 * @since 1.7.0-SNAPSHOT
+	 */
+	class MyStromEcoPowerBindingConfig implements BindingConfig {
+		/**
+		 * The name of the device on the mystrom server.
+		 */
+		public String mystromFriendlyName;
+		
+		/**
+		 * Indicates if the openhab item is a switch item. 
+		 */
+		public Boolean isSwitch = false;
+		
+		/**
+		 * Indicates if the openhab item is a number item.
+		 */
+		public Boolean isNumberItem = false;
+		
+		/**
+		 * Indicates if the openhab item is a string item.
+		 */
+		public Boolean isStringItem = false;
 	}
 }

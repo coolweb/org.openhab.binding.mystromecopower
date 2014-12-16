@@ -41,15 +41,35 @@ import org.slf4j.LoggerFactory;
  * @since 1.7.0-SNAPSHOT
  */
 public class MyStromEcoPowerBinding extends AbstractActiveBinding<MyStromEcoPowerBindingProvider> implements ManagedService {
+	/**
+	 * If set to true, use the mystrom client mock to simulate the mystrom server.
+	 */
 	private Boolean devMode = true;
+	
+	/**
+	 * The user name to login on mystrom server.
+	 */
 	private String userName;
+	
+	/**
+	 * The password to login on mystrom server.
+	 */
 	private String password;
+	
+	/**
+	 * The mystrom client to call the mystrom server.
+	 */
 	private IMystromClient mystromClient;
 	
+	/**
+	 * The openhab logger.
+	 */
 	private static final Logger logger = 
 		LoggerFactory.getLogger(MyStromEcoPowerBinding.class);
 
-	// List of discovered devices with their names and id.
+	/**
+	 * List of discovered devices with their names and id.
+	 */
 	protected Map<String, String> devicesMap = new HashMap<String, String>();
 	
 	/** 
@@ -231,6 +251,12 @@ public class MyStromEcoPowerBinding extends AbstractActiveBinding<MyStromEcoPowe
 		}
 	}
 	
+	/**
+	 * Do a discovery to find all devices on the mystrom server.
+	 * Logs device's name and id.
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
 	private void mystromDiscovery() throws MalformedURLException, IOException{
 		List<MystromDevice> devices;
 		logger.info("Do mystrom discovery");
