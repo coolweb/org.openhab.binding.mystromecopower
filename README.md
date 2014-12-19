@@ -9,7 +9,11 @@ For installation of the binding, please see Wiki page [[Bindings]].
 
 ####This Binding will be available with openHAB version 1.7 !!!
 
-Mystrom Binding needs no configuration in openhab.cfg
+Mystrom Binding needs user and password of mystrom site in openhab.cfg, add the follwing lines into the config file:
+############################### mystromecopower Binding ###########################
+mystromecopower:userName=<youremail>
+mystromecopower:password=<yourpassword>
+
 
 
 ## Item Binding Configuration
