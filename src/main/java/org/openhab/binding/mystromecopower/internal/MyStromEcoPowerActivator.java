@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class MyStromEcoPowerActivator implements BundleActivator {
 
-	private static Logger logger = LoggerFactory.getLogger(MyStromEcoPowerActivator.class); 
+	private static Logger logger = LoggerFactory.getLogger("org.openhab.binding.mystromecopower"); 
 	
 	private static BundleContext context;
 	

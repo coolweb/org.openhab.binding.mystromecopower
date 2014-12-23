@@ -54,7 +54,7 @@ public class MystromClient implements IMystromClient{
 	 */
 	public Boolean login(){
 		Reader reader = null;
-		this.logger.info("Do login for user '{}'", this.userName);
+		this.logger.debug("Do login for user '{}'", this.userName);
 		
 		try {
 			HttpURLConnection httpURLConnection;
@@ -71,7 +71,7 @@ public class MystromClient implements IMystromClient{
 			if(!status.equals("ok")){
 				return false;
 			}
-			this.logger.info("Logon successfull");
+			this.logger.debug("Logon successfull");
 			
 			this.authToken = jsonObject.get("authToken").getAsString();
 			
@@ -152,7 +152,7 @@ public class MystromClient implements IMystromClient{
 	public MystromDevice getDeviceInfo(String deviceId){
 		Reader reader = null;
 		
-		this.logger.info("get device info...");
+		this.logger.debug("get device info...");
 		
 		try {
 			HttpURLConnection httpURLConnection;
@@ -204,7 +204,7 @@ public class MystromClient implements IMystromClient{
 	@Override
 	public Boolean ChangeState(String deviceId, Boolean newStateIsOn) {
 		Reader reader = null;
-		this.logger.info(
+		this.logger.debug(
 				"Change state for device id '{}', new state is on: '{}'",
 				deviceId,
 				newStateIsOn);
@@ -229,7 +229,7 @@ public class MystromClient implements IMystromClient{
 			}
 			
 			String newState = jsonObject.get("state").getAsString();
-			this.logger.info(
+			this.logger.debug(
 					"Switch state for device '{}' successfull, state is '{}'",
 					deviceId,
 					newState);
