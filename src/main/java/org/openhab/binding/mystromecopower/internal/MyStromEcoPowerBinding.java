@@ -44,7 +44,7 @@ public class MyStromEcoPowerBinding extends AbstractActiveBinding<MyStromEcoPowe
 	/**
 	 * If set to true, use the mystrom client mock to simulate the mystrom server.
 	 */
-	private Boolean devMode = true;
+	private Boolean devMode = false;
 	
 	/**
 	 * The user name to login on mystrom server.
@@ -65,7 +65,7 @@ public class MyStromEcoPowerBinding extends AbstractActiveBinding<MyStromEcoPowe
 	 * The openhab logger.
 	 */
 	private static final Logger logger = 
-		LoggerFactory.getLogger(MyStromEcoPowerBinding.class);
+		LoggerFactory.getLogger("org.openhab.binding.mystromecopower");
 
 	/**
 	 * List of discovered devices with their names and id.
@@ -115,6 +115,10 @@ public class MyStromEcoPowerBinding extends AbstractActiveBinding<MyStromEcoPowe
 	protected void execute() {
 		// the frequently executed code (polling) goes here ...
 		logger.debug("execute() method is called!");
+		
+		if(this.devicesMap.isEmpty()){
+			return;
+		}
 		
 		for (MyStromEcoPowerBindingProvider provider : providers) {
 			for (String itemName : provider.getItemNames()) {
@@ -170,7 +174,7 @@ public class MyStromEcoPowerBinding extends AbstractActiveBinding<MyStromEcoPowe
 		    	if(provider.getIsSwitch(itemName))
 		    	{
 					try {
-						logger.info("Command '{}' is about to be send to item '{}'",command, itemName );
+						logger.debug("Command '{}' is about to be send to item '{}'",command, itemName );
 						
 						boolean onOff = OnOffType.ON.equals(command);
 						logger.debug("command '{}' transformed to '{}'", command, onOff);
