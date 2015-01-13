@@ -64,6 +64,11 @@ public class MockMystromClient implements IMystromClient{
 	public MystromDevice getDeviceInfo(String deviceId) {
 		MystromDevice device = this.devices.get(deviceId);
 		device.power = Double.toString(Math.random() * 100);
+		
+		if(device.id == "3"){
+			device.state = "on";
+		}
+		
 		return device;
 	}
 

@@ -8,8 +8,12 @@
  */
 package org.openhab.binding.mystromecopower.internal;
 
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.TriggerBuilder.newTrigger;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
@@ -27,11 +31,17 @@ import org.openhab.core.types.State;
 import org.openhab.binding.mystromecopower.internal.api.*;
 import org.openhab.binding.mystromecopower.internal.api.mock.MockMystromClient;
 import org.openhab.binding.mystromecopower.internal.api.model.MystromDevice;
+import org.openhab.binding.mystromecopower.internal.util.ChangeStateJob;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-	
 
 /**
  * Implement this class if you are going create an actively polling service
@@ -78,12 +88,21 @@ public class MyStromEcoPowerBinding extends AbstractActiveBinding<MyStromEcoPowe
 	 */
 	private long refreshInterval = 60000;
 	
+	/** holds the local quartz scheduler instance */
+	private Scheduler scheduler;
 	
 	public MyStromEcoPowerBinding() {
 	}
 		
 	
 	public void activate() {
+		try {
+            scheduler = StdSchedulerFactory.getDefaultScheduler();
+            super.activate();
+        }
+        catch (SchedulerException se) {
+            logger.error("initializing scheduler throws exception", se);
+        }
 	}
 	
 	public void deactivate() {
@@ -177,13 +196,36 @@ public class MyStromEcoPowerBinding extends AbstractActiveBinding<MyStromEcoPowe
 						logger.debug("Command '{}' is about to be send to item '{}'",command, itemName );
 						
 						boolean onOff = OnOffType.ON.equals(command);
-						logger.debug("command '{}' transformed to '{}'", command, onOff);
+						logger.debug("command '{}' transformed to '{}'", command, onOff ? "on" : "off");
 						
-						if(!this.mystromClient.ChangeState(deviceId, onOff))
-						{
-							// Unsuccessful state change, inform bus that the good 
-							// state is the old one.
-							eventPublisher.postUpdate(itemName,  onOff ? OnOffType.OFF : OnOffType.ON);
+						boolean actualState = this.mystromClient.getDeviceInfo(deviceId).state == "on";
+						if(onOff == actualState){
+							// mystrom state is the same, may be due to change state on/off too
+							// rapidly, so postpone change state
+							
+							String scheduledCommand = deviceId + ";" + onOff;
+							logger.debug("Schedule command: " + scheduledCommand);
+							
+							JobDetail job = JobBuilder.newJob(org.openhab.binding.mystromecopower.internal.util.ChangeStateJob.class)
+						        	.usingJobData(org.openhab.binding.mystromecopower.internal.util.ChangeStateJob.JOB_DATA_CONTENT_KEY, scheduledCommand)
+						            .withIdentity(itemName, "MYSTROMECOPOWER")
+						            .build();
+							
+							Date dateTrigger = new Date(System.currentTimeMillis() + 5000L);
+							
+							 Trigger trigger = newTrigger()
+							            .forJob(job)
+							            .withIdentity(itemName + "_" + dateTrigger + "_trigger", "MYSTROMECOPOWER")
+							            .startAt(dateTrigger)
+							            .build();
+							 this.scheduler.scheduleJob(job, trigger);
+						} else {
+							if(!this.mystromClient.ChangeState(deviceId, onOff))
+							{
+								// Unsuccessful state change, inform bus that the good 
+								// state is the old one.
+								eventPublisher.postUpdate(itemName,  onOff ? OnOffType.OFF : OnOffType.ON);
+							}
 						}
 						
 					} catch (Exception e) {
@@ -241,6 +283,10 @@ public class MyStromEcoPowerBinding extends AbstractActiveBinding<MyStromEcoPowe
 				this.mystromClient = new MockMystromClient();
 			} else {
 				this.mystromClient = new MystromClient(this.userName, this.password, logger);
+			}
+			
+			if(ChangeStateJob.MystromClient == null){
+				ChangeStateJob.MystromClient = this.mystromClient;
 			}
 			
 			setProperlyConfigured(true);

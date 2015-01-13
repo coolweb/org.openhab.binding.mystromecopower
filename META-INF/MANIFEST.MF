@@ -5,7 +5,7 @@ Bundle-License: http://www.eclipse.org/legal/epl-v10.html
 Bundle-Name: openHAB MyStromEcoPower Binding
 Bundle-SymbolicName: org.openhab.binding.mystromecopower
 Bundle-Vendor: openHAB.org
-Bundle-Version: 0.0.1
+Bundle-Version: 1.0.0
 Bundle-Activator: org.openhab.binding.mystromecopower.internal.MyStromEcoPowerActivator
 Bundle-ManifestVersion: 2
 Bundle-Description: This is the MyStromEcoPower binding of the open Home Aut
@@ -17,11 +17,14 @@ Import-Package: org.apache.commons.lang,
  org.openhab.core.library.items,
  org.openhab.core.library.types,
  org.openhab.core.types,
+ org.openhab.io.console,
  org.openhab.model.item.binding,
  org.osgi.framework,
  org.osgi.service.cm,
  org.osgi.service.component,
  org.osgi.service.event,
+ org.quartz,
+ org.quartz.impl,
  org.slf4j
 Export-Package: org.openhab.binding.mystromecopower
 Bundle-DocURL: http://www.openhab.org
@@ -29,3 +32,4 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Service-Component: OSGI-INF/binding.xml, OSGI-INF/genericbindingprovider.xml
 Bundle-ClassPath: .,
  lib/gson-2.2.4.jar
+Require-Bundle: org.openhab.core.scheduler
