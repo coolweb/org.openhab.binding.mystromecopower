@@ -10,11 +10,9 @@ For installation of the binding, please see Wiki page [[Bindings]].
 ####This Binding will be available with openHAB version 1.7 !!!
 
 Mystrom Binding needs user and password of mystrom site in openhab.cfg, add the follwing lines into the config file:
-############################### mystromecopower Binding ###########################
-mystromecopower:userName=<youremail>
-mystromecopower:password=<yourpassword>
 
-
+	mystromecopower:userName=<b>youremail</b>
+	mystromecopower:password=<b>yourpassword</b>
 
 ## Item Binding Configuration
 
@@ -32,9 +30,14 @@ String is usefull for scripting because you can receive the state on, off or off
     Number WallFanOffice_Number 	{mystromecopower="lightBathroom"}
     String WallFanOffice_String 	{mystromecopower="lightBathroom"}					
 
+*Switch: used to get state on/off of the device, accepted commands are <b>on</b>,<b>off</b>. For master device supports <b>restart</b> command to restart the master.
+*Number: used to receive consumption in Watt of the device, doesn't support command.
+*String: used to receive state on/off/offline.
+
 ## Logs
 Add the log into the logback.xml file, the logger name is org.openhab.binding.mystromecopower:
 for INFO level you can set:
-<logger name="org.openhab.binding.mystromecopower" level="INFO">
-		<appender-ref ref="STDOUT" />
-</logger>
+
+	&lt;logger name=&quot;org.openhab.binding.mystromecopower&quot; level=&quot;INFO&quot;&gt;
+			&lt;appender-ref ref=&quot;STDOUT&quot; /&gt;
+	&lt;/logger&gt;

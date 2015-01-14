@@ -82,6 +82,11 @@ public class MyStromEcoPowerBinding extends AbstractActiveBinding<MyStromEcoPowe
 	 */
 	protected Map<String, String> devicesMap = new HashMap<String, String>();
 	
+	/**
+	 * The master device found after discovery, necessary for restart command.
+	 */
+	private MystromDevice masterDevice;
+	
 	/** 
 	 * the refresh interval which is used to poll values from the MyStromEcoPower
 	 * server (optional, defaults to 60000ms)
@@ -195,41 +200,55 @@ public class MyStromEcoPowerBinding extends AbstractActiveBinding<MyStromEcoPowe
 					try {
 						logger.debug("Command '{}' is about to be send to item '{}'",command, itemName );
 						
-						boolean onOff = OnOffType.ON.equals(command);
-						logger.debug("command '{}' transformed to '{}'", command, onOff ? "on" : "off");
-						
-						boolean actualState = this.mystromClient.getDeviceInfo(deviceId).state == "on";
-						if(onOff == actualState){
-							// mystrom state is the same, may be due to change state on/off too
-							// rapidly, so postpone change state
+						if(OnOffType.ON.equals(command) || OnOffType.OFF.equals(command)){
+							// on/off command
+							boolean onOff = OnOffType.ON.equals(command);
+							logger.debug("command '{}' transformed to '{}'", command, onOff ? "on" : "off");
 							
-							String scheduledCommand = deviceId + ";" + onOff;
-							logger.debug("Schedule command: " + scheduledCommand);
-							
-							JobDetail job = JobBuilder.newJob(org.openhab.binding.mystromecopower.internal.util.ChangeStateJob.class)
-						        	.usingJobData(org.openhab.binding.mystromecopower.internal.util.ChangeStateJob.JOB_DATA_CONTENT_KEY, scheduledCommand)
-						            .withIdentity(itemName, "MYSTROMECOPOWER")
-						            .build();
-							
-							Date dateTrigger = new Date(System.currentTimeMillis() + 5000L);
-							
-							 Trigger trigger = newTrigger()
-							            .forJob(job)
-							            .withIdentity(itemName + "_" + dateTrigger + "_trigger", "MYSTROMECOPOWER")
-							            .startAt(dateTrigger)
+							boolean actualState = this.mystromClient.getDeviceInfo(deviceId).state == "on";
+							if(onOff == actualState){
+								// mystrom state is the same, may be due to change state on/off too
+								// rapidly, so postpone change state
+								
+								String scheduledCommand = deviceId + ";" + onOff;
+								logger.debug("Schedule command: " + scheduledCommand);
+								
+								JobDetail job = JobBuilder.newJob(org.openhab.binding.mystromecopower.internal.util.ChangeStateJob.class)
+							        	.usingJobData(org.openhab.binding.mystromecopower.internal.util.ChangeStateJob.JOB_DATA_CONTENT_KEY, scheduledCommand)
+							            .withIdentity(itemName, "MYSTROMECOPOWER")
 							            .build();
-							 this.scheduler.scheduleJob(job, trigger);
-						} else {
-							if(!this.mystromClient.ChangeState(deviceId, onOff))
-							{
-								// Unsuccessful state change, inform bus that the good 
-								// state is the old one.
-								eventPublisher.postUpdate(itemName,  onOff ? OnOffType.OFF : OnOffType.ON);
+								
+								Date dateTrigger = new Date(System.currentTimeMillis() + 5000L);
+								
+								 Trigger trigger = newTrigger()
+								            .forJob(job)
+								            .withIdentity(itemName + "_" + dateTrigger + "_trigger", "MYSTROMECOPOWER")
+								            .startAt(dateTrigger)
+								            .build();
+								 this.scheduler.scheduleJob(job, trigger);
+							} else {
+								if(!this.mystromClient.ChangeState(deviceId, onOff))
+								{
+									// Unsuccessful state change, inform bus that the good 
+									// state is the old one.
+									eventPublisher.postUpdate(itemName,  onOff ? OnOffType.OFF : OnOffType.ON);
+								}
 							}
 						}
 						
+						if(command.toString().toLowerCase() == "restart"){
+							// restart master device request
+							if(deviceId != this.masterDevice.id){
+								logger.error("Restart command not send to the master device, master id '{}', received id '{}'",
+										this.masterDevice.id,
+										deviceId);
+							} else {
+								logger.debug("Restart master device");
+								this.mystromClient.RestartMaster(deviceId);
+							}
+						}
 					} catch (Exception e) {
-						logger.error("Failed to send {} command", command, e);
+						logger.error("Failed to send '{}' command", command, e);
 					}
 		    	}
 			} else {
@@ -323,6 +342,11 @@ public class MyStromEcoPowerBinding extends AbstractActiveBinding<MyStromEcoPowe
 		
 		for (MystromDevice mystromDevice : devices) {
 			this.devicesMap.put(mystromDevice.name, mystromDevice.id);
+			
+			if(mystromDevice.type == "mst"){
+				this.masterDevice = mystromDevice;
+			}
+			
 			logger.info("Mystrom device name: '{}', mystrom device id:'{}'", 
 					mystromDevice.name, mystromDevice.id);
 		}

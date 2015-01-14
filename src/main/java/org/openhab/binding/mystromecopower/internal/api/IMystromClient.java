@@ -47,4 +47,10 @@ public interface IMystromClient {
 	 * @return True if change is successful else False.
 	 */
 	public Boolean ChangeState(String deviceId, Boolean newStateIsOn);
+	
+	/**
+	 * Restart the master device.
+	 * @param deviceId The id of the master device.
+	 */
+	public void RestartMaster(String deviceId);
 }

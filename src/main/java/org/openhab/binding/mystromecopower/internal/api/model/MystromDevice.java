@@ -35,4 +35,10 @@ public class MystromDevice {
 	 * The power the device is consuming in Watt.
 	 */
 	public String power;
+	
+	/**
+	 * Device type.
+	 * mst: master, eth: ethernet, sw:switch, mtr:?, swg:?, tph:?
+	 */
+	public String type;
 }

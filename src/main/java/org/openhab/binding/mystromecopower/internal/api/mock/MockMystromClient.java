@@ -78,4 +78,8 @@ public class MockMystromClient implements IMystromClient{
 		return true;
 	}
 
+	@Override
+	public void RestartMaster(String deviceId) {
+	}
+
 }

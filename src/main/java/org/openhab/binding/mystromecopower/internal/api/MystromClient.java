@@ -252,6 +252,45 @@ public class MystromClient implements IMystromClient{
 		}
 	}
 	
+	@Override
+	public void RestartMaster(String deviceId) {
+		Reader reader = null;
+		this.logger.debug(
+				"Restart master device id '{}'",
+				deviceId);
+		
+		try {
+			HttpURLConnection httpURLConnection;
+			httpURLConnection = (HttpURLConnection) new URL(API_URL + "device/restart" +
+					"?authToken=" + this.authToken
+					+ "&id=" + deviceId)
+				.openConnection();
+			
+			InputStream inputStream = httpURLConnection.getInputStream();
+			reader = new InputStreamReader(inputStream, "UTF-8");
+			JsonObject jsonObject = (JsonObject) jsonParser.parse(reader);
+			
+			String status = jsonObject.get("status").getAsString();
+			if(!status.equals("ok")){
+				String error = jsonObject.get("error").getAsString();
+				this.logger.error("Unable to restart master device '{}' error '{}'", deviceId, error);
+			}
+		}
+		catch(Exception ex)
+		{
+			this.logger.error("Error restart master device: '{}'", ex.toString());
+		} 
+		finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException ignored) {
+
+				}
+			}
+		}
+	}
+	
 	private GsonBuilder createGsonBuilder() {
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		
